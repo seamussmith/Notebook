@@ -1,0 +1,74 @@
+#!markdown
+
+# The Adapter Pattern
+
+Compare these two classes for a moment:\
+(ignore the fact that the methods are marked virtual)
+
+#!csharp
+
+class Turkey
+{
+    public virtual void Gobble()
+        => Console.WriteLine("Gobble Gobble");
+    public virtual void Fly()
+        => Console.WriteLine("Fly a short distance");
+}
+
+#!csharp
+
+class Duck
+{
+    public virtual void Quack()
+        => Console.WriteLine("Quack!!");
+    public virtual void Fly()
+        => Console.WriteLine("Fwoosh!");
+}
+
+#!markdown
+
+These two classes have very similar functionality, except for the fact that the `Turkey` gobbles and the `Duck` quacks. Although they are a little similar, the `Turkey` is sadly unable to be a `Duck` through polymorphism and never be able to live out their dreams of being a `Duck` idol...
+
+...or can it?
+
+## Making an adapter
+
+The solution to letting the `Turkey` live out their `Duck`y dreams is through an adapter class. This is a class that effectively interfaces with an instance of an adaptee to bring similar functionality to the class it is being adapted to.
+
+Lets make one of those classes!
+
+#!csharp
+
+class TurkeyToDuckAdapter : Duck
+{
+    public Turkey TurkeyInstance { get; private set; }
+    public TurkeyToDuckAdapter(Turkey _turkey)
+        => (TurkeyInstance) = _turkey;
+    public override void Quack()
+        => TurkeyInstance.Gobble();
+    public override void Fly()
+        => TurkeyInstance.Fly();
+}
+
+#!markdown
+
+Here, the `TurkeyToDuckAdapter` class inherits `Duck`. It holds an instance to a `Turkey`, and all of the method overrides act like interfaces for the `Turkey` instance.
+
+Now our `Turkey`, and all future generations of turkeys can live our their dreams to be a `Duck` idol at the annual Duck idol show!\
+(they just have to ignore the weird looks from now on 😢. You `Turkey`s can be `Duck` idols too! Stay strong 😭!)
+
+#!csharp
+
+void duckIdolShow(Duck[] duckIdols)
+{
+    foreach (var duck in duckIdols)
+        duck.Quack();
+}
+
+var ourDuckIdolsThisYear = new[] {
+    new Duck(),
+    new TurkeyToDuckAdapter(new Turkey()),
+    new Duck(),
+};
+
+duckIdolShow(ourDuckIdolsThisYear);
